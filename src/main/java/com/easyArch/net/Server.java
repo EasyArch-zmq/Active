@@ -27,8 +27,8 @@ public class Server {
                 bootstrap.group(boss, work)
                         .channel(NioServerSocketChannel.class)
                         .option(ChannelOption.SO_BACKLOG, 1024)
-                        .option(ChannelOption.TCP_NODELAY, true)
-                        .option(ChannelOption.SO_KEEPALIVE, true)
+                        .childOption(ChannelOption.TCP_NODELAY, true)
+                        .childOption(ChannelOption.SO_KEEPALIVE, true)
                         .childHandler(socketChannelInitializer);
 
                 ChannelFuture future = bootstrap.bind(port).sync();

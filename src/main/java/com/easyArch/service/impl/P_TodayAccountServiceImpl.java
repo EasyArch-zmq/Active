@@ -11,6 +11,7 @@ import com.easyArch.mapper.P_UserDao;
 import com.easyArch.mapper.PictureDao;
 import com.easyArch.service.P_TodayAccountService;
 import com.easyArch.util.ControllerUtil;
+import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -36,7 +37,7 @@ public class P_TodayAccountServiceImpl implements P_TodayAccountService {
         String p_name=p_user.getUsername();
         String userAddress=p_userDao
                 .selectUserAddress(p_name);
-        System.out.println("g_userDdress:"+userAddress);
+        System.out.println("p_userDdress:"+userAddress);
         List<Construction_inDefa>list_data=new ArrayList<>();
         List<Info_inCons>info_list=new ArrayList<>();
         String []str= ControllerUtil.slipAddress(userAddress);
@@ -63,11 +64,14 @@ public class P_TodayAccountServiceImpl implements P_TodayAccountService {
                 info_inCons.setTier(tier);
                 info_inCons.setLocation(location);
                 //设置日期格式
-                SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+//                SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                //设置当前日期格式 以及日期 TODO 待修改
+                DateTime now=DateTime.now();
+                String date2=now.toString("yyyy-MM-dd HH:mm:ss");
                 //获取日期
-                String date2="2020-08-11 23:59:59";//df.format(new Date());
+//                String date2="2020-08-11 23:59:59";//df.format(new Date());
                 String [] str2=ControllerUtil.slipDate2(date2);
-                String date1="2020-08-11 01:00:00";//str2[0]+" 01:00:00";
+                String date1=/*"2020-08-11 01:00:00";*/str2[0]+" 01:00:00";
 //                list = dateNumberDao.selectTwoHour(mac_list.get(j),"2020-07-28 00:00:00", "2020-07-28 23:59:00");
                 list = dateNumberDao.selectTwoHour(mac_list.get(j),date1,date2);
 //                String[] strings;

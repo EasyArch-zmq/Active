@@ -1,6 +1,7 @@
 package com.easyArch.service.impl;
 
 import com.alibaba.fastjson.JSON;
+import com.easyArch.Application;
 import com.easyArch.entity.DateAndAddress;
 import com.easyArch.entity.DateAndNumber;
 import com.easyArch.entity.DateNumberAll;
@@ -10,12 +11,14 @@ import com.easyArch.mapper.Date_Box_TimeDao;
 import com.easyArch.mapper.Date_TimeDao;
 import com.easyArch.service.G_AppointTimeService;
 import com.easyArch.util.ControllerUtil;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 @Service
 public class G_AppointTimeServiceImpl implements G_AppointTimeService {
+    private static final Logger logger=Logger.getLogger(G_AppointTimeServiceImpl.class);
     @Autowired
     DateNumberDao dateNumberDao;
     @Autowired
@@ -57,8 +60,8 @@ public class G_AppointTimeServiceImpl implements G_AppointTimeService {
         if(address!=null&&mac_address1.equals("null")){
             mac_address=null;
             str = ControllerUtil.slipAddress(address);
-            city=str[0];;
-            county=str[1];;
+            city=str[0];
+            county=str[1];
             street=str[2];
             specific_address=str[3];
             if(county.equals("null")&&street.equals("null")&&specific_address.equals("null")){
@@ -82,8 +85,11 @@ public class G_AppointTimeServiceImpl implements G_AppointTimeService {
 //                Pattern pat = Pattern.compile(REGEX_CHINESE);
 //                Matcher mat = pat.matcher(mac_address1);
 //                mac_address =mat.replaceAll("");
+            logger.info("数组越界问题 原数据："+address);
             String []strings=ControllerUtil.slipDate2(mac_address1);
+            logger.info("数组越界问题 分割后数据："+strings[1]);
             mac_address=strings[1];
+
         }
         if (myTime1!=null&&myTime2!=null){
             dateNumberAll.setTime1(myTime1);

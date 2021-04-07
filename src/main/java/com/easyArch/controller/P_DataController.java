@@ -49,6 +49,7 @@ public class P_DataController {
     public String selectDefaultNumber (@RequestBody P_User p_user) {
         if(p_user!=null){
             return p_todayAccountService.selectTodayNumber(p_user);
+
         }
         return JSON.toJSONString("f");
     }
