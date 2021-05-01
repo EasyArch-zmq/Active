@@ -4,9 +4,11 @@ import com.alibaba.fastjson.JSON;
 import com.easyArch.entity.*;
 import com.easyArch.mapper.*;
 import com.easyArch.service.P_mainService;
+import com.easyArch.service.SQLDataService;
 import com.easyArch.util.ControllerUtil;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.object.SqlCall;
 import org.springframework.stereotype.Service;
 
 import java.text.SimpleDateFormat;
@@ -17,7 +19,7 @@ import java.util.List;
 @Service
 public class P_mainServiceImpl implements P_mainService {
     @Autowired
-    private DateNumberDao dateNumberDao;
+    private SQLDataService sqlDataService;
     @Autowired
     private P_UserDao p_userDao;
     @Autowired
@@ -71,7 +73,7 @@ public class P_mainServiceImpl implements P_mainService {
             List<String> pics=pictureDao.selectPic(specificAddress,city,county,street,cons_List.get(i));
             construction_inAll.setPicture_url(pics.get(0));
             List<String>mac_list=addressDao
-                    .select_mac(specificAddress,city,county,street,cons_List.get(i));
+                    .selectMacByConstruction(specificAddress,city,county,street,cons_List.get(i));
 
             for (int j = 0; j <mac_list.size() ; j++) {
                 //红绿警报范围值
@@ -84,7 +86,7 @@ public class P_mainServiceImpl implements P_mainService {
                 //盒子的对应收集到的人数
                 Integer num=0;
                 List<DateAndNumber>numberList=new ArrayList<>();
-                numberList=dateNumberDao.selectTwoHour(mac_list.get(j),date1,date2);
+                numberList=sqlDataService.towHourByOneMac(mac_list.get(j),date1,date2);
                 if(numberList.size()!=0){
                     time_inList=new Integer(numberList.get(numberList.size()-1).getTime());
                     if (time_inDate.equals(time_inList)||time_inDate-1==time_inList){

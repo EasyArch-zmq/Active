@@ -1,5 +1,5 @@
 function main(){
-    document.getElementById("index").src="http://121.199.21.197:63393/RiskControll";
+    document.getElementById("index").src="http://121.199.21.197:63394/RiskControll";
     document.getElementById("main").style.color="#2086D7";
     document.getElementById("date").style.color="black";
     document.getElementById("smoke").style.color="black";
@@ -13,7 +13,7 @@ function main(){
     document.getElementById("h6").style.color="black";
 }
 function h1(){
-    document.getElementById("index").src="http://121.199.21.197:63393/date";
+    document.getElementById("index").src="http://121.199.21.197:63394/date";
     document.getElementById("main").style.color="black";
     document.getElementById("date").style.color="#2086D7";
     document.getElementById("smoke").style.color="black";
@@ -26,7 +26,7 @@ function h1(){
     document.getElementById("h5").style.color="black";
     document.getElementById("h6").style.color="black";
 }function h2(){
-    document.getElementById("index").src="http://121.199.21.197:63393/week_Rank1";
+    document.getElementById("index").src="http://121.199.21.197:63394/week_Rank1";
     document.getElementById("main").style.color="black";
     document.getElementById("date").style.color="#2086D7";
     document.getElementById("smoke").style.color="black";
@@ -39,7 +39,7 @@ function h1(){
     document.getElementById("h5").style.color="black";
     document.getElementById("h6").style.color="black";
 }function h3(){
-    document.getElementById("index").src="http://121.199.21.197:63393/time_Rank1";
+    document.getElementById("index").src="http://121.199.21.197:63394/time_Rank1";
     document.getElementById("main").style.color="black";
     document.getElementById("date").style.color="#2086D7";
     document.getElementById("smoke").style.color="black";
@@ -52,7 +52,7 @@ function h1(){
     document.getElementById("h5").style.color="black";
     document.getElementById("h6").style.color="black";
 }function h4(){
-    document.getElementById("index").src="http://121.199.21.197:63393/sameMac_timeRank1";
+    document.getElementById("index").src="http://121.199.21.197:63394/sameMac_timeRank1";
     document.getElementById("main").style.color="black";
     document.getElementById("date").style.color="#2086D7";
     document.getElementById("smoke").style.color="black";
@@ -65,7 +65,7 @@ function h1(){
     document.getElementById("h5").style.color="black";
     document.getElementById("h6").style.color="black";
 }function h5(){
-    document.getElementById("index").src="http://121.199.21.197:63393/statistic_Color_Data1";
+    document.getElementById("index").src="http://121.199.21.197:63394/statistic_Color_Data1";
     document.getElementById("main").style.color="black";
     document.getElementById("date").style.color="#2086D7";
     document.getElementById("smoke").style.color="black";
@@ -78,7 +78,7 @@ function h1(){
     document.getElementById("h1").style.color="black";
     document.getElementById("h6").style.color="black";
 }function h6(){
-    document.getElementById("index").src="http://121.199.21.197:63393/sameTime_Statistic1";
+    document.getElementById("index").src="http://121.199.21.197:63394/sameTime_Statistic1";
     document.getElementById("main").style.color="black";
     document.getElementById("date").style.color="#2086D7";
     document.getElementById("smoke").style.color="black";
@@ -91,7 +91,7 @@ function h1(){
     document.getElementById("h5").style.color="black";
     document.getElementById("h1").style.color="black";
 }function smoke(){
-    document.getElementById("index").src="http://121.199.21.197:63393/smoke";
+    document.getElementById("index").src="http://121.199.21.197:63394/smoke";
     document.getElementById("main").style.color="black";
     document.getElementById("date").style.color="black";
     document.getElementById("smoke").style.color="#2086D7";
@@ -104,7 +104,7 @@ function h1(){
     document.getElementById("h5").style.color="black";
     document.getElementById("h1").style.color="black";
 }function live(){
-    document.getElementById("index").src="http://121.199.21.197:63393/live";
+    document.getElementById("index").src="http://121.199.21.197:63394/live";
     document.getElementById("main").style.color="black";
     document.getElementById("date").style.color="black";
     document.getElementById("smoke").style.color="black";
@@ -118,7 +118,7 @@ function h1(){
     document.getElementById("h1").style.color="black";
 }
 function vl(){
-    document.getElementById("index").src="http://121.199.21.197:63393/area";
+    document.getElementById("index").src="http://121.199.21.197:63394/area";
     document.getElementById("main").style.color="black";
     document.getElementById("date").style.color="black";
     document.getElementById("smoke").style.color="black";

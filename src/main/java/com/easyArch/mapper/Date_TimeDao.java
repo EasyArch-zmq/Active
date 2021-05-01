@@ -17,13 +17,9 @@ public interface Date_TimeDao {
      */
 
 
-    List<DateAndNumber>selectDay_Ci(String city,String date1,String date2,String time1,String time2);
+    List<DateAndNumber>selectDayByMac1(String mac_address,String date1,String date2,String time1,String time2);
 
-    List<DateAndNumber>selectDay_Co(String city,String county,String date1,String date2,String time1,String time2);
-
-    List<DateAndNumber>selectDay_St(String city,String county,String street,String date1,String date2,String time1,String time2);
-
-    List<DateAndNumber>selectDay_Sp(String city,String county,String street,String specific_address,String date1,String date2,String time1,String time2);
+    List<DateAndNumber>selectDayByMac2(String mac_address,String date1,String date2,String time1,String time2);
 
     /**
      * 每月查询
@@ -32,13 +28,8 @@ public interface Date_TimeDao {
      * @return
      */
 
-    List<DateAndNumber>selectMonth_Ci(String city ,String date1,String date2,String time1,String time2);
-
-    List<DateAndNumber>selectMonth_Co(String city,String county,String date1,String date2,String time1,String time2);
-
-    List<DateAndNumber>selectMonth_St(String city,String county,String street,String date1,String date2,String time1,String time2);
-
-    List<DateAndNumber>selectMonth_Sp(String city,String county,String street,String specific_address,String date1,String date2,String time1,String time2);
+    List<DateAndNumber>selectMonthByMac1(String mac_address ,String date1,String date2,String time1,String time2);
+    List<DateAndNumber>selectMonthByMac2(String mac_address ,String date1,String date2,String time1,String time2);
 
     /**
      *每年查询到省
@@ -46,12 +37,7 @@ public interface Date_TimeDao {
      * @param date2
      * @return
      */
-    List<DateAndNumber> selectYear_Ci(String city, String date1, String date2,String time1,String time2);
-
-    List<DateAndNumber>selectYear_Co(String city,String county,String date1,String date2,String time1,String time2);
-
-    List<DateAndNumber>selectYear_St(String city,String county,String street,String date1,String date2,String time1,String time2);
-
-    List<DateAndNumber>selectYear_Sp(String city,String county,String street,String specific_address,String date1,String date2,String time1,String time2);
+    List<DateAndNumber> selectYearByMac1(String city, String date1, String date2,String time1,String time2);
+    List<DateAndNumber> selectYearByMac2(String city, String date1, String date2,String time1,String time2);
 
 }

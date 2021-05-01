@@ -1,6 +1,7 @@
 package com.easyArch;
 
 
+
 import com.easyArch.net.Server;
 import org.apache.log4j.Logger;
 import org.mybatis.spring.annotation.MapperScan;

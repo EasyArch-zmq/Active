@@ -6,14 +6,12 @@ import com.easyArch.mapper.AddressDao;
 import com.easyArch.mapper.ColorDao;
 import com.easyArch.mapper.DateNumberDao;
 import com.easyArch.service.G_AccountAboutColorService;
+import com.easyArch.service.SQLDataService;
 import com.easyArch.util.ControllerUtil;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 @Service
@@ -21,7 +19,7 @@ public class G_AccountAboutColorServiceImpl implements G_AccountAboutColorServic
     @Autowired
     AddressDao addressDao;
     @Autowired
-    DateNumberDao dateNumberDao;
+    SQLDataService sqlDataService;
     @Autowired
     ColorDao colorDao;
 
@@ -48,9 +46,9 @@ public class G_AccountAboutColorServiceImpl implements G_AccountAboutColorServic
         List<ColorAndData>listColorAndData=new ArrayList<>();
         List<DateAndNumber>list;
 
-        List<String>listMac=addressDao.select_mac2(specificAddress, city, county, street);
+        List<String>listMac=addressDao.selectMacBySpecific(specificAddress, city, county, street);
         for (int j = 0; j < listMac.size(); j++) {
-            list = dateNumberDao.selectTwoHour(listMac.get(j),date1,date2);
+            list = sqlDataService.towHourByOneMac(listMac.get(j),date1,date2);
             List<DateAndNumber>resList=ControllerUtil.filterTowHour(list,index);
 
             Color1 color1=colorDao.selectColor(listMac.get(j));

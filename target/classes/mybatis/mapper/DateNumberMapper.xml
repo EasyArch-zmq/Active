@@ -3,234 +3,90 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.easyArch.mapper.DateNumberDao">
-    <select id="selectAllNumber" resultType="Integer">
+    <select id="selectAllNumber1" resultType="Integer">
        select count(mytime) as num from time_info where mac_address=#{mac_address}
     </select>
-
+    <select id="selectAllNumber2" resultType="Integer">
+       select count(mytime) as num from time_info where mac_address=#{mac_address}
+    </select>
+    <select id="selectNumByMacAndTime1" resultType="Integer">
+        select count(mytime) as num from
+        time_info where (mytime between #{date1}and #{date2})and mac_address=#{mac_address}
+    </select>
+    <!--表2-->
+    <select id="selectNumByMacAndTime2" resultType="Integer">
+        select count(mytime) as num from
+        time_info2 where (mytime between #{date1}and #{date2})and mac_address=#{mac_address}
+    </select>
 
     <!-- 范围值为两小时 -->
-    <select id="selectTwoHour" resultType="com.easyArch.entity.DateAndNumber">
+    <select id="selectTwoHourByMac1" resultType="com.easyArch.entity.DateAndNumber">
         select date_format(concat(date(mytime),' ',floor((hour(mytime)-1)/2)*2+1),'%H')
         as time,count(*) as num from time_info where (mytime between #{date1}
         and #{date2})and mac_address=#{mac_address}
         group by time
         order by time
     </select>
-    <select id="selectTwoHour_Ci" resultType="com.easyArch.entity.DateAndNumber">
-        select date_format(concat(date(mytime),' ',floor((hour(mytime)-1)/2)*2+1),'%H')
-        as time,count(*) as num from time_info where (mytime between #{date1}
-        and #{date2})and mac_address in (select mac_address from address_info
-        where city=#{city})
-        group by time
-        order by time
-    </select>
 
-    <select id="selectTwoHour_Co" resultType="com.easyArch.entity.DateAndNumber">
+    <!--表2-->
+    <select id="selectTwoHourByMac2" resultType="com.easyArch.entity.DateAndNumber">
         select date_format(concat(date(mytime),' ',floor((hour(mytime)-1)/2)*2+1),'%H')
-        as time,count(*) as num from time_info where (mytime between #{date1}
-        and #{date2})and mac_address in (select mac_address from address_info
-        where city=#{city} and county=#{county})
+        as time,count(*) as num from time_info2 where (mytime between #{date1}
+        and #{date2})and mac_address=#{mac_address}
         group by time
         order by time
-    </select>
-
-    <select id="selectTwoHour_St" resultType="com.easyArch.entity.DateAndNumber">
-        select date_format(concat(date(mytime),' ',floor((hour(mytime)-1)/2)*2+1),'%H')
-        as time,count(*) as num from time_info where (mytime between #{date1}
-        and #{date2})and mac_address in (select mac_address from address_info
-        where city=#{city}
-        and county=#{county}
-        and street=#{street})
-        group by time
-        order by time
-    </select>
-
-    <select id="selectTwoHour_Sp" resultType="com.easyArch.entity.DateAndNumber">
-        select date_format(concat(date(mytime),' ',floor((hour(mytime)-1)/2)*2+1),'%H')
-        as time,count(*) as num from time_info where (mytime between #{date1}
-        and #{date2})and mac_address in (select mac_address from address_info
-        where city=#{city} and county=#{county}
-        and street=#{street}
-        and (specific_address like #{specific_address}"%"))
-        group by time
-        order by time
-    </select>
-    <select id="selectDayAndTime" resultType="Integer">
-        select count(*) as num from
-        time_info where (mytime between #{date1}and #{date2})and mac_address=#{mac_address}
     </select>
 
     <!-- 范围值为天 -->
-
-    <select id="selectDay" resultType="com.easyArch.entity.DateAndNumber">
+    <select id="selectDayByMac1" resultType="com.easyArch.entity.DateAndNumber">
         select date_format(mytime,'%Y-%m-%d') as time,count(*) as num from
         time_info where (mytime between #{date1}
         and #{date2})and mac_address=#{mac_address}
         group by time
         order by time
     </select>
-    <select id="selectDay_Ci" resultType="com.easyArch.entity.DateAndNumber">
+    <!--表2-->
+    <select id="selectDayByMac2" resultType="com.easyArch.entity.DateAndNumber">
         select date_format(mytime,'%Y-%m-%d') as time,count(*) as num from
-        time_info where (mytime between #{date1}
-        and #{date2})and mac_address in (select mac_address from address_info
-        where city=#{city})
+        time_info2 where (mytime between #{date1}
+        and #{date2})and mac_address=#{mac_address}
         group by time
         order by time
-    </select>
-    <select id="selectDay_adCi" resultType="Integer">
-       select count(*) as num from
-        time_info where (mytime between #{date1}
-        and #{date2})and mac_address in (select mac_address from address_info
-        where city=#{city})
     </select>
 
-    <select id="selectDay_Co" resultType="com.easyArch.entity.DateAndNumber">
-        select date_format(mytime,'%Y-%m-%d') as time,count(*) as num from
-        time_info where (mytime between #{date1}
-        and #{date2})and mac_address in (select mac_address from address_info
-        where city=#{city} and county=#{county})
-        group by time
-        order by time
-    </select>
-    <select id="selectDay_adCo" resultType="Integer">
-        select count(*) as num from
-        time_info where (mytime between #{date1}
-        and #{date2})and mac_address in (select mac_address from address_info
-        where city=#{city} and county=#{county})
-    </select>
 
-    <select id="selectDay_St" resultType="com.easyArch.entity.DateAndNumber">
-        select date_format(mytime,'%Y-%m-%d') as time,count(*) as num from
-        time_info where (mytime between #{date1}
-        and #{date2})and mac_address in (select mac_address from address_info
-        where city=#{city}
-        and county=#{county}
-        and street=#{street})
-        group by time
-        order by time
-    </select>
-    <select id="selectDay_adSt" resultType="Integer">
-        select count(*) as num from
-        time_info where (mytime between #{date1}
-        and #{date2})and mac_address in (select mac_address from address_info
-        where city=#{city}
-        and county=#{county}
-        and street=#{street})
-    </select>
-    <select id="selectDay_Sp" resultType="com.easyArch.entity.DateAndNumber">
-        select date_format(mytime,'%Y-%m-%d') as time,count(*) as num from
-        time_info where (mytime between #{date1}
-        and #{date2})and mac_address in (select mac_address from address_info
-        where city=#{city} and county=#{county}
-        and street=#{street}
-        and (specific_address like #{specific_address}"%"))
-        group by time
-        order by time
-    </select>
-    <select id="selectDay_adSp" resultType="Integer">
-        select count(*) as num from
-        time_info where (mytime between #{date1}
-        and #{date2})and mac_address in (select mac_address from address_info
-        where city=#{city} and county=#{county}
-        and street=#{street}
-        and (specific_address like #{specific_address}"%"))
-    </select>
     <!-- 范围值为月 -->
-    <select id="selectMonth" resultType="com.easyArch.entity.DateAndNumber">
+    <select id="selectMonthByMac1" resultType="com.easyArch.entity.DateAndNumber">
         select date_format(mytime,'%Y-%m') as time,count(*) as num from
         time_info where (mytime between #{date1}
         and #{date2})and mac_address=#{mac_address}
         group by time
         order by time
     </select>
-    <select id="selectMonth_Ci" resultType="com.easyArch.entity.DateAndNumber">
+    <!--表2-->
+    <select id="selectMonthByMac2" resultType="com.easyArch.entity.DateAndNumber">
         select date_format(mytime,'%Y-%m') as time,count(*) as num from
-        time_info where (mytime between #{date1}
+        time_info2 where (mytime between #{date1}
         and #{date2})and mac_address=#{mac_address}
-        group by time
-        order by time
-    </select>
-
-    <select id="selectMonth_Co" resultType="com.easyArch.entity.DateAndNumber">
-        select date_format(mytime,'%Y-%m') as time,count(*) as num from
-        time_info where (mytime between #{date1}
-        and #{date2})and mac_address in (select mac_address from address_info
-        where city=#{city} and county=#{county})
-        group by time
-        order by time
-    </select>
-
-    <select id="selectMonth_St" resultType="com.easyArch.entity.DateAndNumber">
-        select date_format(mytime,'%Y-%m') as time,count(*) as num from
-        time_info where (mytime between #{date1}
-        and #{date2})and mac_address in (select mac_address from address_info
-        where city=#{city}
-        and county=#{county}
-        and street=#{street})
-        group by time
-        order by time
-    </select>
-
-    <select id="selectMonth_Sp" resultType="com.easyArch.entity.DateAndNumber">
-        select date_format(mytime,'%Y-%m') as time,count(*) as num from
-        time_info where (mytime between #{date1}
-        and #{date2})and mac_address in (select mac_address from address_info
-        where city=#{city} and county=#{county}
-        and street=#{street}
-        and (specific_address like #{specific_address}"%"))
         group by time
         order by time
     </select>
 
     <!-- 范围值为年 -->
-    <select id="selectYear" resultType="com.easyArch.entity.DateAndNumber">
+    <select id="selectYearByMac1" resultType="com.easyArch.entity.DateAndNumber">
         select date_format(mytime,'%Y') as time,count(*) as num from
         time_info where (mytime between #{date1}
         and #{date2})and mac_address=#{mac_address}
         group by time
         order by time
     </select>
-    <select id="selectYear_Ci" resultType="com.easyArch.entity.DateAndNumber">
+    <!--表2-->
+    <select id="selectYearByMac2" resultType="com.easyArch.entity.DateAndNumber">
         select date_format(mytime,'%Y') as time,count(*) as num from
-        time_info where (mytime between #{date1}
-        and #{date2})and mac_address in (select mac_address from address_info
-        where city=#{city})
+        time_info2 where (mytime between #{date1}
+        and #{date2})and mac_address=#{mac_address}
         group by time
         order by time
     </select>
-
-    <select id="selectYear_Co" resultType="com.easyArch.entity.DateAndNumber">
-        select date_format(mytime,'%Y') as time,count(*) as num from
-        time_info where (mytime between #{date1}
-        and #{date2})and mac_address in (select mac_address from address_info
-        where city=#{city} and county=#{county})
-        group by time
-        order by time
-    </select>
-
-
-    <select id="selectYear_St" resultType="com.easyArch.entity.DateAndNumber">
-        select date_format(mytime,'%Y') as time,count(*) as num from
-        time_info where (mytime between #{date1}
-        and #{date2})and mac_address in (select mac_address from address_info
-        where city=#{city}
-        and county=#{county}
-        and street=#{street})
-        group by time
-        order by time
-    </select>
-
-    <select id="selectYear_Sp" resultType="com.easyArch.entity.DateAndNumber">
-        select date_format(mytime,'%Y') as time,count(*) as num from
-        time_info where (mytime between #{date1}
-        and #{date2})and mac_address in (select mac_address from address_info
-        where city=#{city} and county=#{county}
-        and street=#{street}
-        and (specific_address like #{specific_address}"%"))
-        group by time
-        order by time
-    </select>
-
-
 
 </mapper>

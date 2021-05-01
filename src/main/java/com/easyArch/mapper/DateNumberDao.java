@@ -21,50 +21,23 @@ public interface DateNumberDao {
      * @param date1
      * @return
      */
-    List<DateAndNumber>selectTwoHour(String mac_address,String date1,String date2);
+    List<DateAndNumber>selectTwoHourByMac1(String mac_address,String date1,String date2);
+    List<DateAndNumber>selectTwoHourByMac2(String mac_address,String date1,String date2);
 
-    List<DateAndNumber>selectTwoHour_Ci(String city,String date1,String date2);
-
-    List<DateAndNumber>selectTwoHour_Co(String city,String county,String date1,String date2);
-
-    List<DateAndNumber>selectTwoHour_To(String city,String county,String date1,String date2);
-
-    List<DateAndNumber>selectTwoHour_St(String city,String county,String street,String date1,String date2);
-
-    List<DateAndNumber>selectTwoHour_Sp(String city,String county,String street,String specific_address,String date1,String date2);
+    /**
+     * 查数量
+     * */
+    Integer selectNumByMacAndTime1(String mac_address, String date1, String date2);
+    Integer selectNumByMacAndTime2(String mac_address, String date1, String date2);
     /**
      * 每日查询
      * @param date1
      * @param date2
      * @return
      */
+    List<DateAndNumber>selectDayByMac1(String mac_address,String date1,String date2);
 
-    Integer selectDayAndTime(String mac_address, String date1, String date2);
-
-    List<DateAndNumber>selectDay(String mac_address,String date1,String date2);
-    
-    List<DateAndNumber>selectDay_Ci(String city,String date1,String date2);
-
-    Integer selectDay_adCi(String city,String date1,String date2);
-
-    List<DateAndNumber>selectDay_Co(String city,String county,String date1,String date2);
-
-    Integer selectDay_adCo(String city,String county,String date1,String date2);
-
-
-    List<DateAndNumber>selectDay_To(String city,String county,String date1,String date2);
-
-    Integer selectDay_adTo(String city,String county,String date1,String date2);
-
-    List<DateAndNumber>selectDay_St(String city,String county,String street,String date1,String date2);
-
-    Integer selectDay_adSt(String city,String county,String street,String date1,String date2);
-
-
-    List<DateAndNumber>selectDay_Sp(String city,String county,String street,String specific_address,String date1,String date2);
-
-    Integer selectDay_adSp(String city,String county,String street,String specific_address,String date1,String date2);
-
+    List<DateAndNumber>selectDayByMac2(String mac_address,String date1,String date2);
     /**
      * 每月查询
      * @param date1
@@ -72,43 +45,15 @@ public interface DateNumberDao {
      * @return
      */
 
-    List<DateAndNumber>selectMonth(String mac_address ,String date1,String date2);
-    
-    List<DateAndNumber>selectMonth_Ci(String city ,String date1,String date2);
-
-    List<DateAndNumber>selectMonth_Co(String city,String county,String date1,String date2);
-
-    List<DateAndNumber>selectMonth_To(String city,String county,String date1,String date2);
-
-    List<DateAndNumber>selectMonth_St(String city,String county,String street,String date1,String date2);
-
-    List<DateAndNumber>selectMonth_Sp(String city,String county,String street,String specific_address,String date1,String date2);
-
+    List<DateAndNumber>selectMonthByMac1(String mac_address ,String date1,String date2);
+    List<DateAndNumber>selectMonthByMac2(String mac_address ,String date1,String date2);
     /**
-     *每年查询到省
+     *每年查询
      * @param date1
      * @param date2
      * @return
      */
-    List<DateAndNumber>selectYear(String mac_address,String date1,String date2);
-
-    List<DateAndNumber>selectYear_Ci(String city,String date1,String date2);
-
-    /**
-     * 到市
-     * @param
-     * @param city
-     * @param date1
-     * @param date2
-     * @return
-     */
-    List<DateAndNumber>selectYear_Co(String city,String county,String date1,String date2);
-
-    List<DateAndNumber>selectYear_To(String city,String county,String date1,String date2);
-
-    List<DateAndNumber>selectYear_St(String city,String county,String street,String date1,String date2);
-
-    List<DateAndNumber>selectYear_Sp(String city,String county,String street,String specific_address,String date1,String date2);
-
+    List<DateAndNumber>selectYearByMac1(String mac_address,String date1,String date2);
+    List<DateAndNumber>selectYearByMac2(String mac_address,String date1,String date2);
 
 }

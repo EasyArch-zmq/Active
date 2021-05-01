@@ -1,4 +1,4 @@
-const BASE_URL = 'http://121.199.21.197:63393'
+const BASE_URL = 'http://121.199.21.197:63394'
 $(document).ready(() => {
     $('#g_Login').click(() => {
         let username = $('#user_name').val()
@@ -20,7 +20,7 @@ $(document).ready(() => {
                 else{
                         window.localStorage.setItem('g_username', $('#user_name').val());
                         window.localStorage.setItem('token', res.split(':')[1]);
-                        window.location.href = "http://121.199.21.197:63393/nav"
+                        window.location.href = "http://121.199.21.197:63394/nav"
                     }
             }
         })
@@ -49,7 +49,7 @@ $(document).ready(() => {
                 } else {
                     window.localStorage.setItem('p_username', $('#user_name1').val());
                     window.localStorage.setItem('p_token', res.split(':')[1]);
-                    window.location.href = "http://121.199.21.197:63393/p_main"
+                    window.location.href = "http://121.199.21.197:63394/p_main"
                 }
             }
         })

@@ -3,6 +3,7 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.easyArch.mapper.AddressDao">
+    <!--查询返回地址列表-->
     <select id="city" resultType="java.lang.String">
        select distinct city from address_info
     </select>
@@ -20,8 +21,6 @@
        and street=#{street})
     </select>
 
-
-
     <select id="select_construction" resultType="java.lang.String">
        select distinct construction from address_info where specific_address
        like #{specific_address}"%"
@@ -29,20 +28,35 @@
        and county=#{county}
        and street=#{street})
     </select>
-    <select id="select_mac" resultType="java.lang.String">
-       select mac_address from address_info where specific_address
-       like #{specific_address}"%"
-       and (city=#{city}
-       and county=#{county}
-       and street=#{street} and construction=#{construction})
+
+    <!--查询返回Mac地址的-->
+    <select id="selectMacByCity" resultType="java.lang.String">
+       select mac_address from address_info where city=#{city}
     </select>
-    <select id="select_mac2" resultType="java.lang.String">
+
+    <select id="selectMacByCounty" resultType="java.lang.String">
+       select mac_address from address_info where (city=#{city} and county=#{county})
+    </select>
+
+    <select id="selectMacByStreet" resultType="java.lang.String">
+       select mac_address from address_info where (city=#{city} and county=#{county} and street=#{street})
+    </select>
+
+    <select id="selectMacBySpecific" resultType="java.lang.String">
        select mac_address from address_info where specific_address= #{specific_address}
        and (city=#{city}
        and county=#{county}
        and street=#{street})
     </select>
 
+    <select id="selectMacByConstruction" resultType="java.lang.String">
+       select mac_address from address_info where specific_address=#{specific_address}
+       and (city=#{city}
+       and county=#{county}
+       and street=#{street} and construction=#{construction})
+    </select>
+
+    <!--返回location和层数的-->
     <select id="selectLocation_tier" resultType="com.easyArch.entity.Location_tier">
         select location,tier from address_info where mac_address=#{mac_address}
     </select>

@@ -5,11 +5,9 @@ import com.easyArch.Application;
 import com.easyArch.entity.DateAndAddress;
 import com.easyArch.entity.DateAndNumber;
 import com.easyArch.entity.DateNumberAll;
-import com.easyArch.mapper.AddressDao;
-import com.easyArch.mapper.DateNumberDao;
-import com.easyArch.mapper.Date_Box_TimeDao;
-import com.easyArch.mapper.Date_TimeDao;
+import com.easyArch.mapper.*;
 import com.easyArch.service.G_AppointTimeService;
+import com.easyArch.service.SQLDataService;
 import com.easyArch.util.ControllerUtil;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +24,7 @@ public class G_AppointTimeServiceImpl implements G_AppointTimeService {
     @Autowired
     Date_TimeDao date_timeDao;
     @Autowired
-    Date_Box_TimeDao dateBoxTimeDao;
+    SQLDataService sqlDataService;
     @Override
     public String selectDateNumber2(DateAndAddress dateAndAddress) {
         List<DateAndNumber> list;
@@ -54,6 +52,7 @@ public class G_AppointTimeServiceImpl implements G_AppointTimeService {
         String city=null;
         String county=null;
         String street=null;
+        List<String> macList=null;
         String specific_address=null;
         String address = dateAndAddress.getAddress();
         String mac_address1=dateAndAddress.getMac_address();
@@ -65,16 +64,16 @@ public class G_AppointTimeServiceImpl implements G_AppointTimeService {
             street=str[2];
             specific_address=str[3];
             if(county.equals("null")&&street.equals("null")&&specific_address.equals("null")){
-                state=1;
+                macList=addressDao.selectMacByCity(city);/*查看天津市的总的*/
                 dateNumberAll.setAddress(city);
             }else if (street.equals("null")&&specific_address.equals("null")){
-                state=2;
+                macList=addressDao.selectMacByCounty(city,county);/*查看到区的*/
                 dateNumberAll.setAddress(county);
             }else if(specific_address.equals("null")){
-                state=3;
+                macList=addressDao.selectMacByStreet(city, county,street);/*查看到街的*/
                 dateNumberAll.setAddress(street);
             }else {
-                state=4;
+                macList=addressDao.selectMacBySpecific(city, county, street, specific_address);/*查看到具体位置的*/
                 dateNumberAll.setAddress(specific_address);
             }
         }else if(!mac_address1.equals("null")) {
@@ -96,12 +95,13 @@ public class G_AppointTimeServiceImpl implements G_AppointTimeService {
             dateNumberAll.setTime2(myTime2);
         }
         System.out.println("address: "+address);
+        /*日期处理*/
         if (year1!=null&& year2!=null) {
             if (month1 != null && month2 != null) {
                 if (day1 != null && day2 != null) {
                     String str1 = year1 + "-" + month1 + "-" + day1;
                     String str2 = year2 + "-" + month2 + "-" + day2;
-                    //查询一天里
+                    //TODO 查询一天里
                     if (str1.equals(str2)) {
                         System.out.println("str1=str2------------------");
                         if (myTime1 == null && myTime2 == null) {
@@ -113,94 +113,39 @@ public class G_AppointTimeServiceImpl implements G_AppointTimeService {
                             str1 = str1 + " " + myTime1;
                             str2 = str2 + " " + myTime2;
                         }
-
                         /**
-                         * 盒子非盒子
+                         * 盒子非盒子 ok了
                          */
                         if (mac_address == null && address != null) {
-                            switch (state) {
-                                case 1:
-                                    list = ((myTime1 == null) ? dateNumberDao.selectTwoHour_Ci(city, str1, str2)
-                                            : date_timeDao.selectDay_Ci(city, str1, str2, myTime1, myTime2));
-                                    dateNumberAll.setList(list);
-                                    return JSON.toJSONString(dateNumberAll);
-                                case 2:
-                                    list = ((myTime1 == null) ?
-                                            dateNumberDao.selectTwoHour_Co(city, county, str1, str2)
-                                            : date_timeDao.selectDay_Co(city, county, str1, str2, myTime1, myTime2));
-                                    if (myTime1 == null) {
-                                        list = ControllerUtil.filterTowHour(list, "23");
-                                    }
-                                    dateNumberAll.setList(list);
-                                    return JSON.toJSONString(dateNumberAll);
-                                case 3:
-                                    list = ((myTime1 == null) ?
-                                            dateNumberDao.selectTwoHour_St(city, county,street, str1, str2)
-                                            : date_timeDao.selectDay_St(city, county,street, str1, str2, myTime1, myTime2));
-                                    if (myTime1 == null) {
-                                        list = ControllerUtil.filterTowHour(list, "23");
-                                    }
-                                    dateNumberAll.setList(list);
-                                    return JSON.toJSONString(dateNumberAll);
-                                case 4:
-                                    list = ((myTime1 == null) ?
-                                            dateNumberDao.selectTwoHour_Sp(city, county, street, specific_address, str1, str2)
-                                            : date_timeDao.selectDay_Sp(city, county, street, specific_address, str1, str2, myTime1, myTime2));
-                                    if (myTime1 == null) {
-                                        list = ControllerUtil.filterTowHour(list, "23");
-                                    }
-                                    dateNumberAll.setList(list);
-                                    return JSON.toJSONString(dateNumberAll);
-                                default:
-                            }
-                        } else if (mac_address != null) {
+                            list = ((myTime1 == null) ? sqlDataService.towHourByMac(macList,str1, str2)
+                                    : sqlDataService.dayByMac(macList,str1, str2, myTime1, myTime2));
+                            dateNumberAll.setList(list);
+                            return JSON.toJSONString(dateNumberAll);
+                        } else if (mac_address != null) {/*按照Mac查*/
                             list = ((myTime1 == null) ?
-                                    dateNumberDao.selectTwoHour(mac_address, str1, str2)
-                                    : dateBoxTimeDao.selectDay(mac_address, str1, str2, myTime1, myTime2));
+                                    sqlDataService.towHourByOneMac(mac_address, str1, str2)
+                                    : sqlDataService.dayByOneMac(mac_address, str1, str2, myTime1, myTime2));
                             if (myTime1 == null) {
                                 list = ControllerUtil.filterTowHour(list, "23");
                             }
-
                             dateNumberAll.setList(list);
                             return JSON.toJSONString(dateNumberAll);
                         }
                     }
-                    //按照天为单位查询多天
+
+                    // TODO 按照天为单位查询多天
                     Integer dayt=new Integer(day2)+1;
                     str2 = year2 + "-" + month2 + "-" + dayt;
                     if (mac_address == null && address != null) {
-                        switch (state) {
-                            case 1:
-                                list = ((myTime1 == null) ?
-                                        dateNumberDao.selectDay_Ci(city, str1, str2)
-                                        : date_timeDao.selectDay_Ci(city, str1, str2, myTime1, myTime2));
-                                dateNumberAll.setList(list);
-                                return JSON.toJSONString(dateNumberAll);
-                            case 2:
-                                list = ((myTime1 == null) ?
-                                        dateNumberDao.selectDay_Co(city, county, str1, str2)
-                                        : date_timeDao.selectDay_Co(city, county, str1, str2, myTime1, myTime2));
-                                dateNumberAll.setList(list);
-                                return JSON.toJSONString(dateNumberAll);
-                            case 3:
-                                list = ((myTime1 == null) ?
-                                        dateNumberDao.selectDay_St(city, county,street, str1, str2)
-                                        : date_timeDao.selectDay_St(city, county,street, str1, str2, myTime1, myTime2));
-                                dateNumberAll.setList(list);
-                                return JSON.toJSONString(dateNumberAll);
-                            case 4:
-                                list = ((myTime1 == null) ?
-                                        dateNumberDao.selectDay_Sp(city, county,street, specific_address, str1, str2)
-                                        : date_timeDao.selectDay_Sp(city, county,street, specific_address, str1, str2, myTime1, myTime2));
-                                dateNumberAll.setList(list);
-                                return JSON.toJSONString(dateNumberAll);
-                            default:
-                                return JSON.toJSONString("f");
-                        }
+                        list = ((myTime1 == null) ?
+                                sqlDataService.dayByMacNoTime(macList, str1, str2)
+                                : sqlDataService.dayByMac(macList, str1, str2, myTime1, myTime2));
+                        dateNumberAll.setList(list);
+                        return JSON.toJSONString(dateNumberAll);
                     }else if(mac_address!=null){
                         list = ((myTime1==null)?
-                                dateNumberDao.selectDay(mac_address, str1, str2)
-                                :dateBoxTimeDao.selectDay(mac_address, str1, str2,myTime1,myTime2));
+                                sqlDataService.dayByOneMacNoTime(mac_address, str1, str2)
+                                :sqlDataService.dayByOneMac(mac_address, str1, str2,myTime1,myTime2));
                         dateNumberAll.setList(list);
                         return JSON.toJSONString(dateNumberAll);
                     }
@@ -211,77 +156,31 @@ public class G_AppointTimeServiceImpl implements G_AppointTimeService {
                 if (str1.equals(str2)) {
                     str2 = year2 + "-" + month2 + "-31";
                     if (mac_address == null && address != null) {
-                        switch (state) {
-                            case 1:
-                                list = ((myTime1 == null) ?
-                                        dateNumberDao.selectDay_Ci(city, str1, str2)
-                                        : date_timeDao.selectDay_Ci(city, str1, str2, myTime1, myTime2));
-                                dateNumberAll.setList(list);
-                                return JSON.toJSONString(dateNumberAll);
-                            case 2:
-                                list = ((myTime1 == null) ?
-                                        dateNumberDao.selectDay_Co(city, county, str1, str2)
-                                        : date_timeDao.selectDay_Co(city, county, str1, str2, myTime1, myTime2));
-                                dateNumberAll.setList(list);
-                                return JSON.toJSONString(dateNumberAll);
-                            case 3:
-                                list = ((myTime1 == null) ?
-                                        dateNumberDao.selectDay_St(city, county,street, str1, str2)
-                                        : date_timeDao.selectDay_St(city, county,street, str1, str2, myTime1, myTime2));
-                                dateNumberAll.setList(list);
-                                return JSON.toJSONString(dateNumberAll);
-                            case 4:
-                                list = ((myTime1 == null) ?
-                                        dateNumberDao.selectDay_Sp(city, county,street, specific_address, str1, str2)
-                                        : date_timeDao.selectDay_Sp(city, county,street, specific_address, str1, str2, myTime1, myTime2));
-                                dateNumberAll.setList(list);
-                                return JSON.toJSONString(dateNumberAll);
-                            default:
-                                return JSON.toJSONString("f");
-                        }
+                        list = ((myTime1 == null) ?
+                                sqlDataService.dayByMacNoTime(macList, str1, str2)
+                                : sqlDataService.dayByMac(macList, str1, str2, myTime1, myTime2));
+                        dateNumberAll.setList(list);
+                        return JSON.toJSONString(dateNumberAll);
                     }else if (mac_address!=null){
                         list = ((myTime1==null)?
-                                dateNumberDao.selectDay(mac_address, str1, str2)
-                                :dateBoxTimeDao.selectDay(mac_address, str1, str2,myTime1,myTime2));
+                                sqlDataService.dayByOneMacNoTime(mac_address, str1, str2)
+                                :sqlDataService.dayByOneMac(mac_address, str1, str2,myTime1,myTime2));
                         dateNumberAll.setList(list);
                         return JSON.toJSONString(dateNumberAll);
                     }
                 }
-                //查询以月为单位的多个月
+                //查询以月为单位的多个月 TODO
                 str2 = year2 + "-" + month2 + "-31";
                 if (mac_address == null && address != null) {
-                    switch (state) {
-                        case 1:
-                            list = ((myTime1 == null) ?
-                                    dateNumberDao.selectMonth_Ci(city, str1, str2)
-                                    : date_timeDao.selectMonth_Ci(city, str1, str2, myTime1, myTime2));
-                            dateNumberAll.setList(list);
-                            return JSON.toJSONString(dateNumberAll);
-                        case 2:
-                            list = ((myTime1 == null) ?
-                                    dateNumberDao.selectMonth_Co(city, county, str1, str2)
-                                    : date_timeDao.selectMonth_Co(city, county, str1, str2, myTime1, myTime2));
-                            dateNumberAll.setList(list);
-                            return JSON.toJSONString(dateNumberAll);
-                        case 3:
-                            list = ((myTime1 == null) ?
-                                    dateNumberDao.selectMonth_St(city, county,street, str1, str2)
-                                    : date_timeDao.selectMonth_St(city, county,street, str1, str2, myTime1, myTime2));
-                            dateNumberAll.setList(list);
-                            return JSON.toJSONString(dateNumberAll);
-                        case 4:
-                            list = ((myTime1 == null) ?
-                                    dateNumberDao.selectMonth_Sp(city, county,street, specific_address, str1, str2)
-                                    : date_timeDao.selectMonth_Sp(city, county,street, specific_address, str1, str2, myTime1, myTime2));
-                            dateNumberAll.setList(list);
-                            return JSON.toJSONString(dateNumberAll);
-                        default:
-                            return JSON.toJSONString("f");
-                    }
+                    list = ((myTime1 == null) ?
+                            sqlDataService.monthByMacNoTime(macList, str1, str2)
+                            : sqlDataService.monthByMac(macList, str1, str2, myTime1, myTime2));
+                    dateNumberAll.setList(list);
+                    return JSON.toJSONString(dateNumberAll);
                 }else if (mac_address!=null){
                     list = ((myTime1==null)?
-                            dateNumberDao.selectMonth(mac_address, str1, str2)
-                            :dateBoxTimeDao.selectMonth(mac_address, str1, str2,myTime1,myTime2));
+                            sqlDataService.monthByOneMacNoTime(mac_address, str1, str2)
+                            :sqlDataService.monthByOneMac(mac_address, str1, str2,myTime1,myTime2));
                     dateNumberAll.setList(list);
                     return JSON.toJSONString(dateNumberAll);
                 }
@@ -293,38 +192,15 @@ public class G_AppointTimeServiceImpl implements G_AppointTimeService {
                 str1 = year1 + "-01" + "-01";
                 str2 = year2 + "-12" + "-31";
                 if (mac_address == null && address != null) {
-                    switch (state) {
-                        case 1:
-                            list = ((myTime1 == null) ?
-                                    dateNumberDao.selectMonth_Ci(city, str1, str2)
-                                    : date_timeDao.selectMonth_Ci(city, str1, str2, myTime1, myTime2));
-                            dateNumberAll.setList(list);
-                            return JSON.toJSONString(dateNumberAll);
-                        case 2:
-                            list = ((myTime1 == null) ?
-                                    dateNumberDao.selectMonth_Co(city, county, str1, str2)
-                                    : date_timeDao.selectMonth_Co(city, county, str1, str2, myTime1, myTime2));
-                            dateNumberAll.setList(list);
-                            return JSON.toJSONString(dateNumberAll);
-                        case 3:
-                            list = ((myTime1 == null) ?
-                                    dateNumberDao.selectMonth_St(city, county,street, str1, str2)
-                                    : date_timeDao.selectMonth_St(city, county,street, str1, str2, myTime1, myTime2));
-                            dateNumberAll.setList(list);
-                            return JSON.toJSONString(dateNumberAll);
-                        case 4:
-                            list = ((myTime1 == null) ?
-                                    dateNumberDao.selectMonth_Sp(city, county,street, specific_address, str1, str2)
-                                    : date_timeDao.selectMonth_Sp(city, county,street, specific_address, str1, str2, myTime1, myTime2));
-                            dateNumberAll.setList(list);
-                            return JSON.toJSONString(dateNumberAll);
-                        default:
-                            return JSON.toJSONString("f");
-                    }
+                    list = ((myTime1 == null) ?
+                            sqlDataService.monthByMacNoTime(macList, str1, str2)
+                            : sqlDataService.monthByMac(macList, str1, str2, myTime1, myTime2));
+                    dateNumberAll.setList(list);
+                    return JSON.toJSONString(dateNumberAll);
                 }else if (mac_address!=null){
                     list = ((myTime1==null)?
-                            dateNumberDao.selectMonth(mac_address, str1, str2)
-                            :dateBoxTimeDao.selectMonth(mac_address, str1, str2,myTime1,myTime2));
+                            sqlDataService.monthByOneMacNoTime(mac_address, str1, str2)
+                            :sqlDataService.monthByOneMac(mac_address, str1, str2,myTime1,myTime2));
                     dateNumberAll.setList(list);
                     return JSON.toJSONString(dateNumberAll);
                 }
@@ -334,38 +210,15 @@ public class G_AppointTimeServiceImpl implements G_AppointTimeService {
             str2 = year2 + "-12" + "-31";
             if (mac_address==null) {
                 if (mac_address == null && address != null) {
-                    switch (state) {
-                        case 1:
-                            list = ((myTime1 == null) ?
-                                    dateNumberDao.selectYear_Ci(city, str1, str2)
-                                    : date_timeDao.selectYear_Ci(city, str1, str2, myTime1, myTime2));
-                            dateNumberAll.setList(list);
-                            return JSON.toJSONString(dateNumberAll);
-                        case 2:
-                            list = ((myTime1 == null) ?
-                                    dateNumberDao.selectYear_Co(city, county, str1, str2)
-                                    : date_timeDao.selectYear_Co(city, county, str1, str2, myTime1, myTime2));
-                            dateNumberAll.setList(list);
-                            return JSON.toJSONString(dateNumberAll);
-                        case 3:
-                            list = ((myTime1 == null) ?
-                                    dateNumberDao.selectYear_St(city, county,street, str1, str2)
-                                    : date_timeDao.selectYear_St(city, county,street, str1, str2, myTime1, myTime2));
-                            dateNumberAll.setList(list);
-                            return JSON.toJSONString(dateNumberAll);
-                        case 4:
-                            list = ((myTime1 == null) ?
-                                    dateNumberDao.selectYear_Sp(city, county,street, specific_address, str1, str2)
-                                    : date_timeDao.selectYear_Sp(city, county,street, specific_address, str1, str2, myTime1, myTime2));
-                            dateNumberAll.setList(list);
-                            return JSON.toJSONString(dateNumberAll);
-                        default:
-                            return JSON.toJSONString("f");
-                    }
+                    list = ((myTime1 == null) ?
+                            sqlDataService.yearByMacNoTime(macList, str1, str2)
+                            : sqlDataService.yearByMac(macList, str1, str2, myTime1, myTime2));
+                    dateNumberAll.setList(list);
+                    return JSON.toJSONString(dateNumberAll);
                 }else if (mac_address!=null){
                     list = ((myTime1==null)?
-                            dateNumberDao.selectYear(mac_address, str1, str2)
-                            :dateBoxTimeDao.selectYear(mac_address, str1, str2,myTime1,myTime2));
+                            sqlDataService.yearByOneMacNoTime(mac_address, str1, str2)
+                            :sqlDataService.yearByOneMac(mac_address, str1, str2,myTime1,myTime2));
                     dateNumberAll.setList(list);
                     return JSON.toJSONString(dateNumberAll);
                 }

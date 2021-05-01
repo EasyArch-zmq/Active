@@ -1,5 +1,5 @@
 const myChart = echarts.init(document.getElementById("bar"));
-const BASE_URL = 'http://121.199.21.197:63393'
+const BASE_URL = 'http://121.199.21.197:63394'
 var people=[];
 var time=[];
 var resd;
@@ -310,7 +310,7 @@ function search1(){
     var address=$("#city").val()+","+$("#country").val()+","+$("#street").val()+","+$("#special_address").val();
     console.log(address);
     $.ajax({
-        url: "http://121.199.21.197:63393/statistic_Color_Data",
+        url: "http://121.199.21.197:63394/statistic_Color_Data",
         data: '{ "address": "' + address+ '"}',
         method: 'post',
         contentType: "application/json",
@@ -409,7 +409,7 @@ function acbd(){
         "address":address
     })
     $.ajax({
-        url: "http://121.199.21.197:63393/sameTime_Statistic",
+        url: "http://121.199.21.197:63394/sameTime_Statistic",
         data: data,
         method: 'post',
         contentType: "application/json",

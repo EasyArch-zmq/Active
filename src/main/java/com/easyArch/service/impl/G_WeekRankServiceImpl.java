@@ -2,8 +2,10 @@ package com.easyArch.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.easyArch.entity.*;
+import com.easyArch.mapper.AddressDao;
 import com.easyArch.mapper.DateNumberDao;
 import com.easyArch.service.G_WeekRankService;
+import com.easyArch.service.SQLDataService;
 import com.easyArch.util.ControllerUtil;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +16,9 @@ import java.util.*;
 @Service
 public class G_WeekRankServiceImpl implements G_WeekRankService {
     @Autowired
-    DateNumberDao dateNumberDao;
+    SQLDataService sqlDataService;
+    @Autowired
+    AddressDao addressDao;
     @Override
     public String week_Rank(Address_Month address_month) {
         String addressStr = address_month.getAddress();
@@ -59,8 +63,8 @@ public class G_WeekRankServiceImpl implements G_WeekRankService {
             dayNum = cal.getActualMaximum(Calendar.DAY_OF_MONTH);
             index = year + "-" + month + "-" + dayNum;
         }
-
-        List<DateAndNumber> list = dateNumberDao.selectDay_Sp(city, county, street, specificAddress, date1, index);
+        List<String> macList=addressDao.selectMacBySpecific(city, county, street, specificAddress);
+        List<DateAndNumber> list = sqlDataService.dayByMacNoTime(macList, date1, index);
         if (list.size()==0){
             return JSON.toJSONString("f");
         }

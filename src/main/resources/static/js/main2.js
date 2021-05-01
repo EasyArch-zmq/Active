@@ -1,5 +1,5 @@
 const myChart = echarts.init(document.getElementById("line"));
-const BASE_URL = 'http://121.199.21.197:63393'
+const BASE_URL = 'http://121.199.21.197:63394'
 
 // myChart.setOption(option)
 var yanval=[];

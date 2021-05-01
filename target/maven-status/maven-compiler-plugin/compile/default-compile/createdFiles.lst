@@ -1,3 +1,4 @@
+com/easyArch/service/SQLDataService.class
 com/easyArch/service/G_AppointTimeService.class
 com/easyArch/mapper/P_UserDao.class
 com/easyArch/service/P_mainService.class
@@ -33,6 +34,7 @@ com/easyArch/net/SocketHandler.class
 com/easyArch/service/LoginService.class
 com/easyArch/entity/RedInfo.class
 com/easyArch/net/SocketChannelInitializer.class
+com/easyArch/service/impl/SQLDataServiceImpl.class
 com/easyArch/service/impl/P_mainServiceImpl.class
 com/easyArch/entity/IntWeekNum.class
 com/easyArch/entity/NumberInfo.class
@@ -48,7 +50,6 @@ com/easyArch/service/P_DaySortService.class
 com/easyArch/controller/ApplyAddressController.class
 com/easyArch/entity/Construction_inDefa.class
 com/easyArch/service/G_XiGuaService.class
-com/easyArch/mapper/Date_Box_TimeDao.class
 com/easyArch/util/ControllerUtil.class
 com/easyArch/entity/DateNumberAll.class
 com/easyArch/entity/DateAndAddress.class
@@ -87,7 +88,6 @@ com/easyArch/service/impl/ApplyAddressServiceImpl.class
 com/easyArch/controller/LoginController.class
 com/easyArch/service/ApplyAddressService.class
 com/easyArch/service/ColorInsertService.class
-com/easyArch/mapper/SortDao.class
 com/easyArch/controller/G_DataController.class
 com/easyArch/controller/JumpPageController.class
 com/easyArch/service/impl/G_AccountAboutColorServiceImpl.class

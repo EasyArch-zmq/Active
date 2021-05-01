@@ -8,6 +8,7 @@ import com.easyArch.entity.Mac_ListTimeSort;
 import com.easyArch.mapper.AddressDao;
 import com.easyArch.mapper.DateNumberDao;
 import com.easyArch.service.G_TimeRankService;
+import com.easyArch.service.SQLDataService;
 import com.easyArch.util.ControllerUtil;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +23,7 @@ public class G_TimeRankServiceImpl implements G_TimeRankService {
     @Autowired
     AddressDao addressDao;
     @Autowired
-    DateNumberDao dateNumberDao;
+    SQLDataService sqlDataService;
     @Override
     public String time_Rank(DateAndAddress address) {
         String addressStr = address.getAddress();
@@ -43,10 +44,10 @@ public class G_TimeRankServiceImpl implements G_TimeRankService {
         List<DateAndNumber> list;
         List<Mac_ListTimeSort>listTimeSortList=new ArrayList<>();
 
-        List<String> listMac=addressDao.select_mac2(specificAddress, city, county, street);
+        List<String> listMac=addressDao.selectMacBySpecific(specificAddress, city, county, street);
         for (int j = 0; j < listMac.size(); j++) {
             Location_tier locationTier=addressDao.selectLocation_tier(listMac.get(j));
-            list = dateNumberDao.selectTwoHour(listMac.get(j),date1,date2);
+            list = sqlDataService.towHourByOneMac(listMac.get(j),date1,date2);
             list=ControllerUtil.TowHourSortUtil(list,index);
             List<DateAndNumber>resList=ControllerUtil.listTimeSort(list);
             Mac_ListTimeSort mac_listTimeSort=new Mac_ListTimeSort();

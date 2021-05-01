@@ -6,21 +6,19 @@ import com.easyArch.entity.Mac_Num;
 import com.easyArch.entity.P_User;
 import com.easyArch.mapper.AddressDao;
 import com.easyArch.mapper.P_UserDao;
-import com.easyArch.mapper.SortDao;
 import com.easyArch.service.P_TowHourSortService;
+import com.easyArch.service.SQLDataService;
 import com.easyArch.util.ControllerUtil;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 @Service
 public class P_TowHourSortServiceImpl implements P_TowHourSortService {
     @Autowired
-    SortDao sortDao;
+    SQLDataService sqlDataService;
     @Autowired
     P_UserDao p_userDao;
     @Autowired
@@ -84,7 +82,7 @@ public class P_TowHourSortServiceImpl implements P_TowHourSortService {
             Mac_Num mac_num=new Mac_Num();
             //待改 TODO 待修改
             mac_num.setMac_address(Macs.get(i).getLocation());
-            mac_num.setNum(sortDao.selectMacNumber(Macs.get(i).getMac_address(),date1,date2));
+            mac_num.setNum(sqlDataService.selectNumByOneMac(Macs.get(i).getMac_address(),date1,date2));
             list.add(mac_num);
         }
         List<Mac_Num>list1=ControllerUtil.listCustomSort(list);

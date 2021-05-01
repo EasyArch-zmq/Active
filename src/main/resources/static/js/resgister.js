@@ -54,7 +54,7 @@ $('#p_res').click(() => {
             console.log(res)
             if (res==='"T"') {
                 alert("注册成功！")
-                window.location.href = "http://121.199.21.197:63393/Login";
+                window.location.href = "http://121.199.21.197:63394/Login";
             } else alert("注册失败！")
         }
     })

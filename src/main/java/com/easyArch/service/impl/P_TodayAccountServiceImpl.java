@@ -10,6 +10,7 @@ import com.easyArch.mapper.DateNumberDao;
 import com.easyArch.mapper.P_UserDao;
 import com.easyArch.mapper.PictureDao;
 import com.easyArch.service.P_TodayAccountService;
+import com.easyArch.service.SQLDataService;
 import com.easyArch.util.ControllerUtil;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +24,7 @@ import java.util.List;
 @Service
 public class P_TodayAccountServiceImpl implements P_TodayAccountService {
     @Autowired
-    private DateNumberDao dateNumberDao;
+    private SQLDataService sqlDataService;
     @Autowired
     private P_UserDao p_userDao;
     @Autowired
@@ -55,7 +56,7 @@ public class P_TodayAccountServiceImpl implements P_TodayAccountService {
             List<String> pics=pictureDao.selectPic(specificAddress,city,county,street,cons_List.get(i));
             construction_inDefa.setPicture_url(pics.get(0));
             List<String> mac_list = addressDao
-                    .select_mac(specificAddress, city, county, street, cons_List.get(i));
+                    .selectMacByConstruction(specificAddress, city, county, street, cons_List.get(i));
             for (int j = 0; j < mac_list.size(); j++) {
                 Info_inCons info_inCons=new Info_inCons();
                 info_inCons.setMac_address(mac_list.get(j));
@@ -73,7 +74,7 @@ public class P_TodayAccountServiceImpl implements P_TodayAccountService {
                 String [] str2=ControllerUtil.slipDate2(date2);
                 String date1=/*"2020-08-11 01:00:00";*/str2[0]+" 01:00:00";
 //                list = dateNumberDao.selectTwoHour(mac_list.get(j),"2020-07-28 00:00:00", "2020-07-28 23:59:00");
-                list = dateNumberDao.selectTwoHour(mac_list.get(j),date1,date2);
+                list = sqlDataService.towHourByOneMac(mac_list.get(j),date1,date2);
 //                String[] strings;
 //                strings = ControllerUtil.slipDate3(str2[1]);
                 List<DateAndNumber>resList=ControllerUtil.filterTowHour(list,"23");

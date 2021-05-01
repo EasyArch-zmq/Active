@@ -7,6 +7,7 @@ import com.easyArch.entity.DateNumberAll;
 import com.easyArch.mapper.AddressDao;
 import com.easyArch.mapper.DateNumberDao;
 import com.easyArch.service.G_SuccessiveTimeService;
+import com.easyArch.service.SQLDataService;
 import com.easyArch.util.ControllerUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,7 +17,7 @@ import java.util.List;
 @Service
 public class G_SuccessiveTimeServiceImpl implements G_SuccessiveTimeService {
     @Autowired
-    DateNumberDao dateNumberDao;
+    SQLDataService sqlDataService;
     @Autowired
     AddressDao addressDao;
     @Override
@@ -29,6 +30,7 @@ public class G_SuccessiveTimeServiceImpl implements G_SuccessiveTimeService {
         String specific_address=null;
         String mac_address=null;
         String[] str=null;
+        List<String> macList=null;
         String year1 = dateAndAddress.getYear1();
         String month1 = dateAndAddress.getMonth1();
         String day1 = dateAndAddress.getDay1();
@@ -51,19 +53,19 @@ public class G_SuccessiveTimeServiceImpl implements G_SuccessiveTimeService {
             street=str[2];
             specific_address=str[3];
             if(county.equals("null")&&street.equals("null")&&specific_address.equals("null")){
-                state=1;
+                macList=addressDao.selectMacByCity(city);/*查看天津市的总的*/
                 dateNumberAll.setAddress(city);
             }else if (street.equals("null")&&specific_address.equals("null")){
-                state=2;
+                macList=addressDao.selectMacByCounty(city,county);/*查看到区的*/
                 dateNumberAll.setAddress(county);
             }else if(specific_address.equals("null")){
-                state=3;
+                macList=addressDao.selectMacByStreet(city, county,street);/*查看到街的*/
                 dateNumberAll.setAddress(street);
             }else {
-                state=4;
+                macList=addressDao.selectMacBySpecific(city, county, street, specific_address);/*查看到具体位置的*/
                 dateNumberAll.setAddress(specific_address);
             }
-        }else if(!mac_address1.equals("null")){
+        }else if(!mac_address1.equals("null")) {
 //                String REGEX_CHINESE = "[\u4e00-\u9fa5]";
 //                Pattern pat = Pattern.compile(REGEX_CHINESE);
 //                Matcher mat = pat.matcher(mac_address1);
@@ -90,66 +92,25 @@ public class G_SuccessiveTimeServiceImpl implements G_SuccessiveTimeService {
                             str2 = str2 + " " + myTime2;
                         }
                         if (mac_address == null && address != null) {
-                            switch (state) {
-                                case 1:
-                                    if (myTime1 == null && myTime2 == null) {
-                                        list = dateNumberDao.selectTwoHour_Ci(city, str1, str2);
-                                        list = ControllerUtil.filterTowHour(list, "23");
+                            if (myTime1 == null && myTime2 == null) {
+                                list = sqlDataService.towHourByMac(macList, str1, str2);
+                                list = ControllerUtil.filterTowHour(list, "23");
 
-                                    } else {
-                                        DateAndNumber andNumber = new DateAndNumber();
-                                        andNumber.setNum(dateNumberDao.selectDay_adCi(city, str1, str2));
-                                        andNumber.setTime(str1 + "至" + str2);
-                                        list.add(andNumber);
-                                    }
-                                    dateNumberAll.setList(list);
-                                    return JSON.toJSONString(dateNumberAll);
-                                case 2:
-                                    if (myTime1 == null && myTime2 == null) {
-                                        list = dateNumberDao.selectTwoHour_Co(city, county, str1, str2);
-                                        list = ControllerUtil.filterTowHour(list, "23");
-                                    } else {
-                                        DateAndNumber andNumber = new DateAndNumber();
-                                        andNumber.setNum(dateNumberDao.selectDay_adCo(city, county, str1, str2));
-                                        andNumber.setTime(str1 + "至" + str2);
-                                        list.add(andNumber);
-                                    }
-                                    dateNumberAll.setList(list);
-                                    return JSON.toJSONString(dateNumberAll);
-                                case 3:
-                                    if (myTime1 == null && myTime2 == null) {
-                                        list = dateNumberDao.selectTwoHour_St(city, county, street, str1, str2);
-                                        list = ControllerUtil.filterTowHour(list, "23");
-                                    } else {
-                                        DateAndNumber andNumber = new DateAndNumber();
-                                        andNumber.setNum(dateNumberDao.selectDay_adSt(city, county, street, str1, str2));
-                                        andNumber.setTime(str1 + "至" + str2);
-                                        list.add(andNumber);
-                                    }
-                                    dateNumberAll.setList(list);
-                                    return JSON.toJSONString(dateNumberAll);
-                                case 4:
-                                    if (myTime1 == null && myTime2 == null) {
-                                        list = dateNumberDao.selectTwoHour_Sp(city, county, street, specific_address, str1, str2);
-                                        list = ControllerUtil.filterTowHour(list, "23");
-                                    } else {
-                                        DateAndNumber andNumber = new DateAndNumber();
-                                        andNumber.setNum(dateNumberDao.selectDay_adSp(city, county, street, specific_address, str1, str2));
-                                        andNumber.setTime(str1 + "至" + str2);
-                                        list.add(andNumber);
-                                    }
-                                    dateNumberAll.setList(list);
-                                    return JSON.toJSONString(dateNumberAll);
-                                default:
-                                    return JSON.toJSONString("f");
+                            } else {
+                                DateAndNumber andNumber = new DateAndNumber();
+                                andNumber.setNum(sqlDataService.selectNumByMacs(macList, str1, str2));
+                                andNumber.setTime(str1 + "至" + str2);
+                                list.add(andNumber);
                             }
+                            dateNumberAll.setList(list);
+                            return JSON.toJSONString(dateNumberAll);
                         } else if (mac_address != null) {
                             if (myTime1 == null && myTime2 == null) {
-                                list = dateNumberDao.selectTwoHour(mac_address, str1, str2);
+                                list = sqlDataService.towHourByOneMac(mac_address, str1, str2);
                                 list = ControllerUtil.filterTowHour(list, "23");
                             } else {
                                 DateAndNumber andNumber = new DateAndNumber();
-                                andNumber.setNum(dateNumberDao.selectDayAndTime(mac_address, str1, str2));
+                                andNumber.setNum(sqlDataService.selectNumByOneMac(mac_address, str1, str2));
                                 andNumber.setTime(str1 + "至" + str2);
                                 list.add(andNumber);
                             }
@@ -159,72 +120,28 @@ public class G_SuccessiveTimeServiceImpl implements G_SuccessiveTimeService {
                     }
                     //按照天为单位查询多天
                     if (mac_address == null && address != null) {
-                        switch (state) {
-                            case 1:
-                                if (myTime1 == null) {
-                                    Integer dayt = new Integer(day2) + 1;
-                                    str2 = year2 + "-" + month2 + "-" + dayt;
-                                    list = dateNumberDao.selectDay_Ci(city, str1, str2);
-                                } else {
-                                    str1 = str1 + " " + myTime1;
-                                    str2 = str2 + " " + myTime2;
-                                    DateAndNumber andNumber = new DateAndNumber();
-                                    andNumber.setNum(dateNumberDao.selectDay_adCi(city, str1, str2));
-                                    andNumber.setTime(str1 + "至" + str2);
-                                    list.add(andNumber);
-                                }
-                                dateNumberAll.setList(list);
-                                return JSON.toJSONString(dateNumberAll);
-                            case 2:
-                                if (myTime1 == null) {
-                                    list = dateNumberDao.selectDay_Co(city, county, str1, str2);
-                                } else {
-                                    str1 = str1 + " " + myTime1;
-                                    str2 = str2 + " " + myTime2;
-                                    DateAndNumber andNumber = new DateAndNumber();
-                                    andNumber.setNum(dateNumberDao.selectDay_adCo(city, county, str1, str2));
-                                    andNumber.setTime(str1 + "至" + str2);
-                                    list.add(andNumber);
-                                }
-                                dateNumberAll.setList(list);
-                                return JSON.toJSONString(dateNumberAll);
-                            case 3:
-                                if (myTime1 == null) {
-                                    list = dateNumberDao.selectDay_St(city, county, street, str1, str2);
-                                } else {
-                                    str1 = str1 + " " + myTime1;
-                                    str2 = str2 + " " + myTime2;
-                                    DateAndNumber andNumber = new DateAndNumber();
-                                    andNumber.setNum(dateNumberDao.selectDay_adSt(city, county, street, str1, str2));
-                                    andNumber.setTime(str1 + "至" + str2);
-                                    list.add(andNumber);
-                                }
-                                dateNumberAll.setList(list);
-                                return JSON.toJSONString(dateNumberAll);
-                            case 4:
-                                if (myTime1 == null) {
-                                    list = dateNumberDao.selectDay_Sp(city, county, street, specific_address, str1, str2);
-                                } else {
-                                    str1 = str1 + " " + myTime1;
-                                    str2 = str2 + " " + myTime2;
-                                    DateAndNumber andNumber = new DateAndNumber();
-                                    andNumber.setNum(dateNumberDao.selectDay_adSp(city, county, street, specific_address, str1, str2));
-                                    andNumber.setTime(str1 + "至" + str2);
-                                    list.add(andNumber);
-                                }
-                                dateNumberAll.setList(list);
-                                return JSON.toJSONString(dateNumberAll);
-                            default:
-                                return JSON.toJSONString("f");
-                        }
-                    } else if (mac_address != null) {
                         if (myTime1 == null) {
-                            list = dateNumberDao.selectDay(mac_address, str1, str2);
+                            Integer dayt = new Integer(day2) + 1;
+                            str2 = year2 + "-" + month2 + "-" + dayt;
+                            list = sqlDataService.dayByMacNoTime(macList, str1, str2);
                         } else {
                             str1 = str1 + " " + myTime1;
                             str2 = str2 + " " + myTime2;
                             DateAndNumber andNumber = new DateAndNumber();
-                            andNumber.setNum(dateNumberDao.selectDayAndTime(mac_address, str1, str2));
+                            andNumber.setNum(sqlDataService.selectNumByMacs(macList, str1, str2));
+                            andNumber.setTime(str1 + "至" + str2);
+                            list.add(andNumber);
+                        }
+                        dateNumberAll.setList(list);
+                        return JSON.toJSONString(dateNumberAll);
+                    } else if (mac_address != null) {
+                        if (myTime1 == null) {
+                            list = sqlDataService.dayByOneMacNoTime(mac_address, str1, str2);
+                        } else {
+                            str1 = str1 + " " + myTime1;
+                            str2 = str2 + " " + myTime2;
+                            DateAndNumber andNumber = new DateAndNumber();
+                            andNumber.setNum(sqlDataService.selectNumByOneMac(mac_address, str1, str2));
                             andNumber.setTime(str1 + "至" + str2);
                             list.add(andNumber);
                         }
@@ -238,30 +155,13 @@ public class G_SuccessiveTimeServiceImpl implements G_SuccessiveTimeService {
                 if (str1.equals(str2)) {
                     str2 = year2 + "-" + month2 + "-31";
                     if (mac_address == null && address != null) {
-                        switch (state) {
-                            case 1:
-                                list = dateNumberDao.selectDay_Ci(city, str1, str2);
-                                dateNumberAll.setList(list);
-                                return JSON.toJSONString(dateNumberAll);
-                            case 2:
-                                list = dateNumberDao.selectDay_Co(city, county, str1, str2);
-                                dateNumberAll.setList(list);
-                                return JSON.toJSONString(dateNumberAll);
-                            case 3:
-                                list = dateNumberDao.selectDay_St(city, county, street, str1, str2);
-                                dateNumberAll.setList(list);
-                                return JSON.toJSONString(dateNumberAll);
-                            case 4:
-                                list = dateNumberDao.selectDay_Sp(city, county, street, specific_address, str1, str2);
-                                dateNumberAll.setList(list);
-                                return JSON.toJSONString(dateNumberAll);
-                            default:
-                                return JSON.toJSONString("f");
-                        }
+                        list = sqlDataService.dayByMacNoTime(macList, str1, str2);
+                        dateNumberAll.setList(list);
+                        return JSON.toJSONString(dateNumberAll);
                     } else if (mac_address != null) {
                         if (str1.equals(str2)) {
                             str2 = year2 + "-" + month2 + "-31";
-                            list = dateNumberDao.selectDay(mac_address, str1, str2);
+                            list = sqlDataService.dayByOneMacNoTime(mac_address, str1, str2);
                             dateNumberAll.setList(list);
                             return JSON.toJSONString(dateNumberAll);
 
@@ -271,28 +171,11 @@ public class G_SuccessiveTimeServiceImpl implements G_SuccessiveTimeService {
                 //查询以月为单位的多个月
                 str2 = year2 + "-" + month2 + "-31";
                 if (mac_address == null && address != null) {
-                    switch (state) {
-                        case 1:
-                            list = dateNumberDao.selectMonth_Ci(city, str1, str2);
-                            dateNumberAll.setList(list);
-                            return JSON.toJSONString(dateNumberAll);
-                        case 2:
-                            list = dateNumberDao.selectMonth_Co(city, county, str1, str2);
-                            dateNumberAll.setList(list);
-                            return JSON.toJSONString(dateNumberAll);
-                        case 3:
-                            dateNumberDao.selectMonth_St(city, county, street, str1, str2);
-                            dateNumberAll.setList(list);
-                            return JSON.toJSONString(dateNumberAll);
-                        case 4:
-                            list = dateNumberDao.selectMonth_Sp(city, county, street, specific_address, str1, str2);
-                            dateNumberAll.setList(list);
-                            return JSON.toJSONString(dateNumberAll);
-                        default:
-                            return JSON.toJSONString("f");
-                    }
+                    list = sqlDataService.monthByMacNoTime(macList, str1, str2);
+                    dateNumberAll.setList(list);
+                    return JSON.toJSONString(dateNumberAll);
                 } else if (mac_address != null) {
-                    list = dateNumberDao.selectMonth(mac_address, str1, str2);
+                    list = sqlDataService.monthByOneMacNoTime(mac_address, str1, str2);
                     dateNumberAll.setList(list);
                     return JSON.toJSONString(dateNumberAll);
                 }
@@ -305,28 +188,11 @@ public class G_SuccessiveTimeServiceImpl implements G_SuccessiveTimeService {
                 str1 = year1 + "-01" + "-01";
                 str2 = year2 + "-12" + "-31";
                 if (mac_address == null && address != null) {
-                    switch (state) {
-                        case 1:
-                            list = dateNumberDao.selectMonth_Ci(city, str1, str2);
-                            dateNumberAll.setList(list);
-                            return JSON.toJSONString(dateNumberAll);
-                        case 2:
-                            list = dateNumberDao.selectMonth_Co(city, county, str1, str2);
-                            dateNumberAll.setList(list);
-                            return JSON.toJSONString(dateNumberAll);
-                        case 3:
-                            list = dateNumberDao.selectMonth_St(city, county, street, str1, str2);
-                            dateNumberAll.setList(list);
-                            return JSON.toJSONString(dateNumberAll);
-                        case 4:
-                            list = dateNumberDao.selectMonth_Sp(city, county, street, specific_address, str1, str2);
-                            dateNumberAll.setList(list);
-                            return JSON.toJSONString(dateNumberAll);
-                        default:
-                            return JSON.toJSONString("f");
-                    }
+                    list = sqlDataService.monthByMacNoTime(macList, str1, str2);
+                    dateNumberAll.setList(list);
+                    return JSON.toJSONString(dateNumberAll);
                 } else if (mac_address != null) {
-                    list = dateNumberDao.selectMonth(mac_address, str1, str2);
+                    list = sqlDataService.monthByOneMacNoTime(mac_address, str1, str2);
                     dateNumberAll.setList(list);
                     return JSON.toJSONString(dateNumberAll);
                 }
@@ -336,28 +202,11 @@ public class G_SuccessiveTimeServiceImpl implements G_SuccessiveTimeService {
             str1 = year1 + "-01" + "-01";
             str2 = year2 + "-12" + "-31";
             if (mac_address == null && address != null) {
-                switch (state) {
-                    case 1:
-                        list = dateNumberDao.selectYear_Ci(city, str1, str2);
-                        dateNumberAll.setList(list);
-                        return JSON.toJSONString(dateNumberAll);
-                    case 2:
-                        list = dateNumberDao.selectYear_Co(city, county, str1, str2);
-                        dateNumberAll.setList(list);
-                        return JSON.toJSONString(dateNumberAll);
-                    case 3:
-                        list = dateNumberDao.selectYear_St(city, county, street, str1, str2);
-                        dateNumberAll.setList(list);
-                        return JSON.toJSONString(dateNumberAll);
-                    case 4:
-                        list = dateNumberDao.selectYear_Sp(city, county, street, specific_address, str1, str2);
-                        dateNumberAll.setList(list);
-                        return JSON.toJSONString(dateNumberAll);
-                    default:
-                        JSON.toJSONString("f");
-                }
+                list = sqlDataService.yearByMacNoTime(macList, str1, str2);
+                dateNumberAll.setList(list);
+                return JSON.toJSONString(dateNumberAll);
             } else if (mac_address != null) {
-                list = dateNumberDao.selectYear(mac_address, str1, str2);
+                list = sqlDataService.yearByOneMacNoTime(mac_address, str1, str2);
                 dateNumberAll.setList(list);
                 return JSON.toJSONString(dateNumberAll);
             }

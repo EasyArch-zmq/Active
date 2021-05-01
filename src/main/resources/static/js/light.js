@@ -1,4 +1,4 @@
-const BASE_URL = 'http://121.199.21.197:63393'
+const BASE_URL = 'http://121.199.21.197:63394'
 var resd=[];
 // var aaa=["https://test2346.oss-cn-beijing.aliyuncs.com/dt.jpg"]
 var arry1=[],arry=[];
